@@ -9,11 +9,14 @@ import calendar
 import plotly.express as px
 
 
-st.set_page_config(layout='wide', page_title='Inicial')
+st.set_page_config(layout='wide', page_title='Dashboard')
+
+st.runtime.legacy_caching.clear_cache()
 
 
 r = requests.get("https://docs.google.com/spreadsheets/d/1BM5cfa6jNYM8W9_tDczEt50VefeoVAlgtWFC8e2SHKI/export?format=xlsx&id=1BM5cfa6jNYM8W9_tDczEt50VefeoVAlgtWFC8e2SHKI")
 open('clientes.xlsx', 'wb').write(r.content)
+
 
 
 dataHoje = datetime.today()
@@ -75,18 +78,12 @@ baseClientes = pd.read_excel('clientes.xlsx')
 if escolherIndicador == 'Movimento - Cadastros'.upper():
     st.title(escolherIndicador.upper())
     
-    @st.cache_data()
-    def pegarBaseMovimentoCadastros():
-        baseMovimentoCadastros = pd.read_excel('clientes.xlsx')
-        baseMovimentoCadastros['Cadastrado em'] = baseMovimentoCadastros['Cadastrado em'].dt.strftime('%Y-%m-%d')
-        baseMovimentoCadastros['Cadastrado em'] = pd.to_datetime(baseMovimentoCadastros['Cadastrado em'], format='%Y-%m-%d')
-        baseMovimentoCadastros['nomeMês'] = baseMovimentoCadastros['Mês'].apply(lambda x: nome_meses[x])
+    baseMovimentoCadastros = pd.read_excel('clientes.xlsx')
+    baseMovimentoCadastros['Cadastrado em'] = baseMovimentoCadastros['Cadastrado em'].dt.strftime('%Y-%m-%d')
+    baseMovimentoCadastros['Cadastrado em'] = pd.to_datetime(baseMovimentoCadastros['Cadastrado em'], format='%Y-%m-%d')
+    baseMovimentoCadastros['nomeMês'] = baseMovimentoCadastros['Mês'].apply(lambda x: nome_meses[x])
 
-
-        return baseMovimentoCadastros
     
-    baseMovimentoCadastros = pegarBaseMovimentoCadastros()
-
     col1, col2 = st.columns(2)
     data_inicio = col1.date_input('Selecione a data de início', datetime.strptime(data_inicial_mes.strftime('%Y-%m-%d'), '%Y-%m-%d'))
     data_fim = col2.date_input('Selecione a data de fim', datetime.strptime(data_final_mes.strftime('%Y-%m-%d'), '%Y-%m-%d'))
@@ -146,19 +143,13 @@ if escolherIndicador == 'Movimento - Cadastros'.upper():
 
 if escolherIndicador == 'Base'.upper():
     st.title(escolherIndicador.upper())
-    
-    @st.cache_data()
-    def pegarBaseGeral():
-        baseGeral = pd.read_excel('clientes.xlsx')
-        baseGeral['Cadastrado em'] = baseGeral['Cadastrado em'].dt.strftime('%Y-%m-%d')
-        baseGeral['Cadastrado em'] = pd.to_datetime(baseGeral['Cadastrado em'], format='%Y-%m-%d')
-        baseGeral['nomeMês'] = baseGeral['Mês'].apply(lambda x: nome_meses[x])
-        baseGeral['Dia da Semana'] = baseGeral['Mês'].apply(lambda x: nome_meses[x])
+   
+    baseGeral = pd.read_excel('clientes.xlsx')
+    baseGeral['Cadastrado em'] = baseGeral['Cadastrado em'].dt.strftime('%Y-%m-%d')
+    baseGeral['Cadastrado em'] = pd.to_datetime(baseGeral['Cadastrado em'], format='%Y-%m-%d')
+    baseGeral['nomeMês'] = baseGeral['Mês'].apply(lambda x: nome_meses[x])
+    baseGeral['Dia da Semana'] = baseGeral['Mês'].apply(lambda x: nome_meses[x])
 
-
-        return baseGeral
-    
-    baseGeral = pegarBaseGeral()
 
     # col1, col2 = st.columns(2)
     # data_inicio = col1.date_input('Selecione a data de início', datetime.strptime(data_inicial_mes.strftime('%Y-%m-%d'), '%Y-%m-%d'))
